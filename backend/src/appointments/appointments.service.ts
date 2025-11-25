@@ -25,7 +25,7 @@ export class AppointmentsService {
     }
 
     // Create appointment in database
-    const appointment = await this.prisma.appointment.create({
+    const appointment = await (this.prisma as any).appointment.create({
       data,
     });
 
@@ -67,7 +67,7 @@ export class AppointmentsService {
       });
 
       // Save the event ID to the appointment record
-      return this.prisma.appointment.update({
+      return (this.prisma as any).appointment.update({
         where: { id: appointment.id },
         data: { googleEventId: event.data.id },
       });
@@ -87,13 +87,13 @@ export class AppointmentsService {
 
   // Fetch all appointments
   async findAll() {
-    return this.prisma.appointment.findMany({
+    return (this.prisma as any).appointment.findMany({
       orderBy: { appointmentDateTime: 'asc' },
     });
   }
 
   // Optional: find by ID
   async findById(id: string) {
-    return this.prisma.appointment.findUnique({ where: { id } });
+    return (this.prisma as any).appointment.findUnique({where: { id } });
   }
 }
