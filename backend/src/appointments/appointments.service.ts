@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 export class AppointmentsService {
   constructor(
     private prisma: PrismaService,
-    private config: ConfigService,
+    private config: ConfigService, // <— LOAD ENV VARIABLES SAFELY
   ) {}
 
   async createAppointment(data: {
@@ -25,7 +25,7 @@ export class AppointmentsService {
     }
 
     // Create appointment in database
-    const appointment = await (this.prisma as any).appointment.create({
+    const appointment = await this.prisma.appointment.create({
       data,
     });
 
@@ -67,7 +67,7 @@ export class AppointmentsService {
       });
 
       // Save the event ID to the appointment record
-      return (this.prisma as any).appointment.update({
+      return this.prisma.appointment.update({
         where: { id: appointment.id },
         data: { googleEventId: event.data.id },
       });
@@ -75,7 +75,7 @@ export class AppointmentsService {
       console.error('Google Calendar Error:', error);
 
       // Cleanup: remove record if Google Calendar failed
-      await (this.prisma as any).appointment.delete({
+      await this.prisma.appointment.delete({
         where: { id: appointment.id },
       });
 
@@ -87,13 +87,13 @@ export class AppointmentsService {
 
   // Fetch all appointments
   async findAll() {
-    return (this.prisma as any).appointment.findMany({
+    return this.prisma.appointment.findMany({
       orderBy: { appointmentDateTime: 'asc' },
     });
   }
 
   // Optional: find by ID
   async findById(id: string) {
-    return (this.prisma as any).appointment.findUnique({where: { id } });
+    return this.prisma.appointment.findUnique({ where: { id } });
   }
 }
