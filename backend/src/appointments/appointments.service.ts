@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 export class AppointmentsService {
   constructor(
     private prisma: PrismaService,
-    private config: ConfigService, // <— LOAD ENV VARIABLES SAFELY
+    private config: ConfigService,
   ) {}
 
   async createAppointment(data: {
