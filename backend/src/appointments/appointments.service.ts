@@ -75,7 +75,7 @@ export class AppointmentsService {
       console.error('Google Calendar Error:', error);
 
       // Cleanup: remove record if Google Calendar failed
-      await this.prisma.appointment.delete({
+      await (this.prisma as any).appointment.delete({
         where: { id: appointment.id },
       });
 
