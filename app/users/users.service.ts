@@ -6,26 +6,31 @@ import * as bcrypt from 'bcrypt';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  // Create a new admin user
   async createAdminUser(email: string, password: string) {
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new BadRequestException('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.prisma.user.create({
+
+    const user = await this.prisma.user.create({
       data: { email, password: hashedPassword, isAdmin: true },
     });
+
+    return {
+      message: 'Admin user created successfully',
+      user: { id: user.id, email: user.email, isAdmin: user.isAdmin },
+    };
   }
 
-  // Get all users
   async findAll() {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       select: { id: true, email: true, isAdmin: true, createdAt: true },
     });
+
+    return { users };
   }
 
-  // Get a single user by ID
   async findById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
@@ -33,8 +38,8 @@ export class UsersService {
     });
   }
 
-  // Optional: delete a user
   async deleteUser(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+    await this.prisma.user.delete({ where: { id } });
+    return { message: 'User deleted successfully' };
   }
 }
