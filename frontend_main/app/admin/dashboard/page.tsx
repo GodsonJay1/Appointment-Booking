@@ -18,31 +18,14 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Appointments Dashboard</h2>
+    <main className="p-8">
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
-      <table cellPadding="6">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Date/Time</th>
-            <th>Notes</th>
-            <th>Google Event ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((a: any) => (
-            <tr key={a.id}>
-              <td>{a.name}</td>
-              <td>{a.email}</td>
-              <td>{new Date(a.appointmentDateTime).toLocaleString()}</td>
-              <td>{a.notes}</td>
-              <td>{a.googleEventId}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <div className="mt-6 space-y-3">
+        <a href="/admin/appointments" className="underline text-blue-600">
+          View All Appointments
+        </a>
+      </div>
+    </main>
   );
 }
