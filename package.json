@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
-    "build": "nest build tsconfig.build.json",
+    "build": "nest build tsconfig.build.json && npx prisma generate",
     "lint": "eslint \"app/**/*.ts\" --fix"
   },
   "dependencies": {
