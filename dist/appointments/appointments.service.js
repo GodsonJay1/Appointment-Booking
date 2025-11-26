@@ -47,7 +47,6 @@ let AppointmentsService = class AppointmentsService {
                     end: {
                         dateTime: new Date(data.appointmentDateTime.getTime() + 60 * 60 * 1000).toISOString(),
                     },
-                    attendees: [{ email: data.email }],
                 },
             });
             const updated = await this.prisma.appointment.update({

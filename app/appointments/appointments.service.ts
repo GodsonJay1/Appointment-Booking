@@ -51,7 +51,7 @@ export class AppointmentsService {
               data.appointmentDateTime.getTime() + 60 * 60 * 1000
             ).toISOString(),
           },
-          attendees: [{ email: data.email }],
+
         },
       });
 

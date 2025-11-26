@@ -1,32 +1,39 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminLogin() {
-  const [error, setError] = useState("");
-  const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const body = {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    };
+    setError(""); // clear previous errors
+    setLoading(true); // start loading
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
+
+      if (res.ok) {
+        router.push("/admin/dashboard");
+      } else {
+        const data = await res.json();
+        setError(data.message || "Invalid login");
       }
-    );
-
-    if (res.ok) {
-      router.push("/admin/dashboard");
-    } else {
-      alert("Invalid login");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -37,21 +44,37 @@ export default function AdminLogin() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
-          className="border p-2 w-full"
           placeholder="Email"
+          className="border p-2 w-full"
+          value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
         />
 
         <input
           type="password"
-          className="border p-2 w-full"
           placeholder="Password"
+          className="border p-2 w-full"
+          value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
         />
 
-        <button className="bg-blue-600 text-white p-2 w-full rounded">
-          Login
+        <button
+          type="submit"
+          className={`w-full p-2 rounded text-white ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          } transition`}
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
+
+        {error && (
+          <p className="text-red-600 text-sm mt-2">
+            {error}
+          </p>
+        )}
       </form>
     </main>
   );
