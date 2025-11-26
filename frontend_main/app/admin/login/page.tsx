@@ -1,37 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-
-
-interface DecodedToken {
-  id: string;
-  email: string;
-  isAdmin: boolean;
-  exp: number;
-}
 
 export default function AdminLogin() {
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
   const router = useRouter();
-
-  // Auto-redirect if a valid JWT exists
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        const now = Math.floor(Date.now() / 1000);
-        if (decoded.exp > now && decoded.isAdmin) {
-          router.push("/admin/appointments");
-        }
-      } catch {
-        localStorage.removeItem("token"); // remove invalid token
-      }
-    }
-  }, [router]);
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +28,10 @@ export default function AdminLogin() {
         return;
       }
 
+      // Store JWT token in localStorage for future authenticated requests
       localStorage.setItem("token", data.token);
+
+      // Redirect to the appointments page (or dashboard)
       router.push("/admin/appointments");
     } catch (err) {
       console.error("Login error:", err);
@@ -78,6 +56,7 @@ export default function AdminLogin() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
         />
+
         <input
           type="password"
           className="border p-2 w-full"
@@ -86,6 +65,7 @@ export default function AdminLogin() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
+
         <button
           type="submit"
           className="bg-blue-600 text-white p-2 w-full rounded"
@@ -97,4 +77,3 @@ export default function AdminLogin() {
     </main>
   );
 }
-
